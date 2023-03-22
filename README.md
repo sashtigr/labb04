@@ -132,6 +132,38 @@ $ gist REPORT.md
 * используйте [TravisCI](https://travis-ci.com/) для сборки на операционной системе **Linux** с использованием компиляторов **gcc** и **clang**;
 * используйте [AppVeyor](https://www.appveyor.com/) для сборки на операционной системе **Windows**.
 
+
+
+1. Cоздаём директорию .github/workflows и добавляем в неё файл cmake.yaml:
+
+name: Test Build
+on: [push]
+jobs:
+    Test_gcc:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Check out repository code
+          uses: actions/checkout@v3
+        - run: sudo apt update -y
+        - run: sudo apt install -y cmake
+        - run: cd hello_world_application && cmake . -B _build && cd _build && make
+        - run: cd solver_application && cmake . -B _build && cd _build && make
+        - run: echo "This job's status is ${{ job.status }}."
+
+    Test_clang:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out repository code
+              uses: actions/checkout@v3
+            - run: sudo apt update -y
+            - run: sudo apt install -y clang cmake
+            - run: cd hello_world_application && cmake . -B _build -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang && cd _build && make
+            - run: cd solver_application && cmake . -B _build -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang && cd _build && make
+            - run: echo "This job's status is ${{ job.status }}."
+
+2. Cмотрим на результаты работы GitHub Actions во вкладке Actions. При правильной работе увидим зеленую галочку.
+3. Для эстетичности репозитория, во вкладке actions нажмем сreate status badge. Полученную сслыку вставим в README. И модем любоваться надписью Test Build passing.
+
 ## Links
 
 - [Travis Client](https://github.com/travis-ci/travis.rb)
